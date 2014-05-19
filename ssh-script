@@ -1,0 +1,20 @@
+#!/bin/bash
+
+USER="root"
+HOST="0.0.0.0"
+SSH_SCRIPT_DATA_FILE=~/.ssh/ssh-script.data
+
+if [ -f $SSH_SCRIPT_DATA_FILE ]; then
+	. $SSH_SCRIPT_DATA_FILE
+fi
+
+if ! [ -n "$SCRIPT_CONFIGURED" ]; then 
+	echo "** Script setup .. You must enter the server password"
+	cat ~/.ssh/id_rsa.pub | ssh $USER@$HOST 'cat >> ~/.ssh/authorized_keys'
+	>$SSH_SCRIPT_DATA_FILE
+	echo "SCRIPT_CONFIGURED=yes" > $SSH_SCRIPT_DATA_FILE
+	echo "** Script configured"
+fi
+
+ssh $USER@$HOST "ls && exit"
+echo "** The script has finished"
